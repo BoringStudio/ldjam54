@@ -23,8 +23,8 @@ enum Item {
 	TurnRight,
 	RotateLeft,
 	RotateRight,
-	# PushRight,
-	# PushLeft,
+	PushRight,
+	PushLeft,
 	# Semaphore,
 }
 
@@ -51,7 +51,7 @@ func reset():
 func next_tick() -> bool:
 	_tick += 1
 	match ty:
-		Item.RotateLeft, Item.RotateRight:
+		Item.RotateLeft, Item.RotateRight, Item.PushLeft, Item.PushRight:
 			return _tick < 2
 		_:
 			return _tick < 1
@@ -69,6 +69,10 @@ func move_platform(tick_time: float, platform: Platform):
 			_do_move_rotate(tick_time, platform, false)
 		Item.RotateRight:
 			_do_move_rotate(tick_time, platform, true)
+		Item.PushLeft:
+			_do_move_push(tick_time, platform, false)
+		Item.PushRight:
+			_do_move_push(tick_time, platform, true)
 
 
 func _do_move_straight(tick_time: float, platform: Platform):
@@ -96,10 +100,23 @@ func _do_move_rotate(tick_time: float, platform: Platform, right: bool):
 		if tick_time < 0.5:
 			var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
 			_set_relative_platform_position(platform, start_offset.lerp(Vector2.ZERO, tick_time * 2))
-		elif right:
-			platform.rotate_right()
 		else:
-			platform.rotate_left()
+			platform.rotate_handle(1 if right else -1)
+	elif tick_time >= 0.5:
+		var end_offset = Conveyor.make_direction(rot)
+		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
+
+
+func _do_move_push(tick_time: float, platform: Platform, right: bool):
+	if _tick == 0:
+		if tick_time < 0.5:
+			var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
+			_set_relative_platform_position(platform, start_offset.lerp(Vector2.ZERO, tick_time * 2))
+		else:
+			var r = Conveyor.make_rot_right(rot)
+			if not right:
+				r = Conveyor.make_rot_inv(r)
+			platform.shift_handle(Conveyor.make_grid_direction(r))
 	elif tick_time >= 0.5:
 		var end_offset = Conveyor.make_direction(rot)
 		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
@@ -127,6 +144,11 @@ func _sync_sprite_state():
 			flip_h = true
 		Item.RotateRight, Item.RotateLeft:
 			tile_index = Vector2(2, 1)
+		Item.PushRight:
+			tile_index = Vector2(3, 1)
+		Item.PushLeft:
+			tile_index = Vector2(3, 1)
+			flip_h = true
 
 	rotation_degrees = 90 * rot
 	texture.region.size = CELL_SIZE

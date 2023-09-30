@@ -22,7 +22,7 @@ func _ready():
 
 	_spawn_cell(Vector2i(0, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
 	_spawn_cell(Vector2i(0, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
-	_spawn_cell(Vector2i(1, 1), Conveyor.Item.RotateLeft, Conveyor.DIR_RIGHT)
+	_spawn_cell(Vector2i(1, 1), Conveyor.Item.PushRight, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(2, 1), Conveyor.Item.RotateRight, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
