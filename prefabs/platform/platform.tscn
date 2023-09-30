@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://7dieiehuqws0"]
+
+[ext_resource type="Texture2D" uid="uid://dqxfx0ccxfcek" path="res://prefabs/platform/platform.tres" id="1_img2l"]
+
+[node name="Platform" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_repeat = 1
+texture = ExtResource("1_img2l")

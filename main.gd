@@ -1,9 +1,3 @@
 extends Node
 
-
-func _ready():
-	pass # Replace with function body.
-
-
-func _process(delta):
-	pass
+var simulation_speed = 1.0
