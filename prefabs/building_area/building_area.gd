@@ -5,11 +5,12 @@ const Conveyor = preload("res://prefabs/conveyor/conveyor.gd")
 @export var width: int = 10
 @export var height: int = 10
 
-@export var platform: Node2D
+@export var platform: Platform
 
 var _grid: Array[Conveyor]
 var _platform_origin: Vector2i = Vector2i(0, 0)
 var _tick_time: float = 0.0
+var _last_visited_cell: Conveyor = null
 
 @onready var _grid_offset = transform.origin - Vector2(Conveyor.CELL_SIZE) * Vector2(width, height) * 0.5 + Vector2(Conveyor.CELL_SIZE) * 0.5
 
@@ -21,8 +22,8 @@ func _ready():
 
 	_spawn_cell(Vector2i(0, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
 	_spawn_cell(Vector2i(0, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
-	_spawn_cell(Vector2i(1, 1), Conveyor.Item.Straight, Conveyor.DIR_RIGHT)
-	_spawn_cell(Vector2i(2, 1), Conveyor.Item.Straight, Conveyor.DIR_RIGHT)
+	_spawn_cell(Vector2i(1, 1), Conveyor.Item.RotateLeft, Conveyor.DIR_RIGHT)
+	_spawn_cell(Vector2i(2, 1), Conveyor.Item.RotateRight, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
 	_spawn_cell(Vector2i(2, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
@@ -31,6 +32,15 @@ func _ready():
 
 func _process(delta):
 	var current_cell = get_cell(_platform_origin)
+
+	# Update last visited cell if changed
+	if _last_visited_cell != current_cell:
+		platform.on_exit_cell(_last_visited_cell)
+		platform.on_enter_cell(current_cell)
+		_last_visited_cell = current_cell
+		if current_cell != null:
+			current_cell.reset()
+
 	if current_cell == null:
 		# TODO: emit some kind of signal
 		return
@@ -39,8 +49,8 @@ func _process(delta):
 	_tick_time += delta * Main.simulation_speed
 	if _tick_time > 1.0:
 		_tick_time = fmod(_tick_time, 1.0)
-		print(current_cell.get_next_grid_index())
-		_platform_origin += current_cell.get_next_grid_index()
+		if not current_cell.next_tick():
+			_platform_origin += current_cell.get_next_grid_index()
 
 	pass
 
@@ -52,8 +62,8 @@ func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
 
 
 func get_cell(index: Vector2i):
-	# if not check_index(index):
-	# 	return null
+	if not check_index(index):
+		return null
 	return _grid[index.y * width + index.x]
 
 

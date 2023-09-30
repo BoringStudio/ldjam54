@@ -19,10 +19,10 @@ var _tick: int = 0
 
 enum Item {
 	Straight,
-	TurnRight,
 	TurnLeft,
-	# RotateRight,
-	# RotateLeft,
+	TurnRight,
+	RotateLeft,
+	RotateRight,
 	# PushRight,
 	# PushLeft,
 	# Semaphore,
@@ -48,26 +48,61 @@ func reset():
 	_tick = 0
 
 
-func move_platform(tick_time: float, platform: Node2D):
+func next_tick() -> bool:
+	_tick += 1
+	match ty:
+		Item.RotateLeft, Item.RotateRight:
+			return _tick < 2
+		_:
+			return _tick < 1
+
+
+func move_platform(tick_time: float, platform: Platform):
+	match ty:
+		Item.Straight:
+			_do_move_straight(tick_time, platform)
+		Item.TurnLeft:
+			_do_move_turn(tick_time, platform, false)
+		Item.TurnRight:
+			_do_move_turn(tick_time, platform, true)
+		Item.RotateLeft:
+			_do_move_rotate(tick_time, platform, false)
+		Item.RotateRight:
+			_do_move_rotate(tick_time, platform, true)
+
+
+func _do_move_straight(tick_time: float, platform: Platform):
+	var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
+	var end_offset = Conveyor.make_direction(rot)
+
+	_set_relative_platform_position(platform, start_offset.lerp(end_offset, tick_time))
+
+
+func _do_move_turn(tick_time: float, platform: Platform, right: bool):
 	var cell_offset = Vector2()
 	if tick_time < 0.5:
-		var start_offset = Conveyor.make_direction((rot + 2) % 4)
+		var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
 		cell_offset = start_offset.lerp(Vector2.ZERO, tick_time * 2)
 	else:
-		var r := rot
-		match ty:
-			Item.TurnRight:
-				r = Conveyor.make_rot_right(r)
-			Item.TurnLeft:
-				r = Conveyor.make_rot_left(r)
+		var r := Conveyor.make_rot_right(rot) if right else Conveyor.make_rot_left(rot)
 		var end_offset = Conveyor.make_direction(r)
 		cell_offset = Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1)
 
-	platform.transform.origin = transform.origin + cell_offset * CELL_SIZE / 2
+	_set_relative_platform_position(platform, cell_offset)
 
 
-func next_tick() -> bool:
-	return false
+func _do_move_rotate(tick_time: float, platform: Platform, right: bool):
+	if _tick == 0:
+		if tick_time < 0.5:
+			var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
+			_set_relative_platform_position(platform, start_offset.lerp(Vector2.ZERO, tick_time * 2))
+		elif right:
+			platform.rotate_right()
+		else:
+			platform.rotate_left()
+	elif tick_time >= 0.5:
+		var end_offset = Conveyor.make_direction(rot)
+		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
 
 
 func get_next_grid_index() -> Vector2i:
@@ -90,10 +125,16 @@ func _sync_sprite_state():
 		Item.TurnLeft:
 			tile_index = Vector2(1, 1)
 			flip_h = true
+		Item.RotateRight, Item.RotateLeft:
+			tile_index = Vector2(2, 1)
 
 	rotation_degrees = 90 * rot
 	texture.region.size = CELL_SIZE
 	texture.region.position = Vector2(tile_index) * CELL_SIZE
+
+
+func _set_relative_platform_position(platform: Platform, cell_offset: Vector2):
+	platform.transform.origin = transform.origin + cell_offset * CELL_SIZE / 2
 
 
 static func make_direction(r: int) -> Vector2:
@@ -122,6 +163,10 @@ static func make_grid_direction(r: int) -> Vector2i:
 			return Vector2i.LEFT
 		_:
 			return Vector2i.ZERO
+
+
+static func make_rot_inv(r: int) -> int:
+	return (r + 2) % 4
 
 
 static func make_rot_right(r: int) -> int:
