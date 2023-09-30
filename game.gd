@@ -12,9 +12,10 @@ func _ready():
 	camera.get_viewport().size_changed.connect(_sync_camera_zoom)
 
 	# Create platform
-	var platform = Platform.instantiate()
-	add_child(platform)
-	building_area.set_platform(platform)
+	for i in range(2):
+		var platform = Platform.instantiate()
+		add_child(platform)
+		building_area.add_platform(Vector2i(i, 0), platform)
 
 
 func _process(delta):

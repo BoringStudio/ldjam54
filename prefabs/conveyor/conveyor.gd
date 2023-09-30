@@ -15,6 +15,8 @@ const TEXTURE: AtlasTexture = preload("res://prefabs/conveyor/conveyor_texture.t
 @export var ty: Item = Item.Straight
 @export_enum("Up:0", "Right:1", "Down:2", "Left:3") var rot: int = DIR_RIGHT
 
+var occupied: bool = false
+
 var _tick: int = 0
 
 enum Item {
@@ -46,6 +48,7 @@ func _process(_delta):
 
 func reset():
 	_tick = 0
+	occupied = false
 
 
 func next_tick() -> bool:

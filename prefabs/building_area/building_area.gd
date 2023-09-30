@@ -7,10 +7,11 @@ const Conveyor = preload("res://prefabs/conveyor/conveyor.gd")
 @export var height: int = 10
 
 var _grid: Array[Conveyor]
-var _platform: Platform = null
-var _platform_origin: Vector2i = Vector2i(0, 0)
 var _tick_time: float = 0.0
-var _last_visited_cell: Conveyor = null
+
+var _platforms: Array[Platform] = []
+var _platform_origins: Array[Vector2i] = []
+var _platform_last_visited_cells: Array[Conveyor] = []
 
 @onready var _grid_offset = transform.origin - Vector2(Conveyor.CELL_SIZE) * Vector2(width, height) * 0.5 + Vector2(Conveyor.CELL_SIZE) * 0.5
 
@@ -26,42 +27,53 @@ func _ready():
 	_spawn_cell(Vector2i(2, 1), Conveyor.Item.RotateRight, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
-	_spawn_cell(Vector2i(2, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
+	_spawn_cell(Vector2i(2, 0), Conveyor.Item.RotateLeft, Conveyor.DIR_LEFT)
 	_spawn_cell(Vector2i(1, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
 
 
 func _process(delta):
-	if _platform == null:
-		return
+	var next_tick_time = _tick_time + delta * Main.simulation_speed
 
-	var current_cell = get_cell(_platform_origin)
+	for i in range(_platforms.size()):
+		var platform = _platforms[i]
+		var platform_origin = _platform_origins[i]
+		var last_visited_cell = _platform_last_visited_cells[i]
 
-	# Update last visited cell if changed
-	if _last_visited_cell != current_cell:
-		_platform.on_exit_cell(_last_visited_cell)
+		var current_cell = get_cell(platform_origin)
 
-		if _last_visited_cell == null or _last_visited_cell.get_next_grid_index() == current_cell.get_start_direction():
-			_platform.on_enter_cell(current_cell)
-			_last_visited_cell = current_cell
-		else:
+		# Update last visited cell if changed
+		if last_visited_cell != current_cell:
+			platform.on_exit_cell(last_visited_cell)
+
+			if last_visited_cell == null or last_visited_cell.get_next_grid_index() == current_cell.get_start_direction():
+				if current_cell.occupied:
+					continue
+				if last_visited_cell != null:
+					last_visited_cell.occupied = false
+
+				platform.on_enter_cell(current_cell)
+				last_visited_cell = current_cell
+				_platform_last_visited_cells[i] = last_visited_cell
+			else:
+				# TODO: emit some kind of signal
+				current_cell = null
+
+			if current_cell != null:
+				current_cell.reset()
+
+		if current_cell == null:
 			# TODO: emit some kind of signal
-			current_cell = null
+			continue
 
-		if current_cell != null:
-			current_cell.reset()
+		current_cell.occupied = true
+		current_cell.move_platform(_tick_time, platform)
+		if next_tick_time > 1.0:
+			if not current_cell.next_tick():
+				_platform_origins[i] += current_cell.get_next_grid_index()
 
-	if current_cell == null:
-		# TODO: emit some kind of signal
-		return
-
-	current_cell.move_platform(_tick_time, _platform)
-	_tick_time += delta * Main.simulation_speed
+	_tick_time = next_tick_time
 	if _tick_time > 1.0:
 		_tick_time = fmod(_tick_time, 1.0)
-		if not current_cell.next_tick():
-			_platform_origin += current_cell.get_next_grid_index()
-
-	pass
 
 
 func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
@@ -70,8 +82,10 @@ func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
 	set_cell(index, conv)
 
 
-func set_platform(platform: Platform):
-	_platform = platform
+func add_platform(index: Vector2i, platform: Platform):
+	_platforms.push_back(platform)
+	_platform_origins.push_back(index)
+	_platform_last_visited_cells.push_back(null)
 
 
 func get_dimentions() -> Vector2:
@@ -93,8 +107,3 @@ func set_cell(index: Vector2i, item: Conveyor):
 
 func check_index(index: Vector2i) -> bool:
 	return index.x >= 0 and index.y >= 0 and index.x < width and index.y < height
-
-
-static func rotate_dir(dir: int, amount: int) -> int:
-	dir += amount
-	return dir % 4
