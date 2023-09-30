@@ -26,7 +26,7 @@ func _ready():
 	_spawn_cell(Vector2i(2, 1), Conveyor.Item.RotateRight, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
-	_spawn_cell(Vector2i(2, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
+	_spawn_cell(Vector2i(2, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
 	_spawn_cell(Vector2i(1, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
 
 
@@ -36,8 +36,14 @@ func _process(delta):
 	# Update last visited cell if changed
 	if _last_visited_cell != current_cell:
 		platform.on_exit_cell(_last_visited_cell)
-		platform.on_enter_cell(current_cell)
-		_last_visited_cell = current_cell
+
+		if _last_visited_cell == null or _last_visited_cell.get_next_grid_index() == current_cell.get_start_direction():
+			platform.on_enter_cell(current_cell)
+			_last_visited_cell = current_cell
+		else:
+			# TODO: emit some kind of signal
+			current_cell = null
+
 		if current_cell != null:
 			current_cell.reset()
 

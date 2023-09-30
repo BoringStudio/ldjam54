@@ -122,6 +122,10 @@ func _do_move_push(tick_time: float, platform: Platform, right: bool):
 		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
 
 
+func get_start_direction() -> Vector2i:
+	return Conveyor.make_grid_direction(rot)
+
+
 func get_next_grid_index() -> Vector2i:
 	var r = rot
 	match ty:
