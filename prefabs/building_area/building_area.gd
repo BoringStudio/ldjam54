@@ -1,13 +1,13 @@
 extends Node2D
+class_name BuildingArea
 
 const Conveyor = preload("res://prefabs/conveyor/conveyor.gd")
 
 @export var width: int = 10
 @export var height: int = 10
 
-@export var platform: Platform
-
 var _grid: Array[Conveyor]
+var _platform: Platform = null
 var _platform_origin: Vector2i = Vector2i(0, 0)
 var _tick_time: float = 0.0
 var _last_visited_cell: Conveyor = null
@@ -31,14 +31,17 @@ func _ready():
 
 
 func _process(delta):
+	if _platform == null:
+		return
+
 	var current_cell = get_cell(_platform_origin)
 
 	# Update last visited cell if changed
 	if _last_visited_cell != current_cell:
-		platform.on_exit_cell(_last_visited_cell)
+		_platform.on_exit_cell(_last_visited_cell)
 
 		if _last_visited_cell == null or _last_visited_cell.get_next_grid_index() == current_cell.get_start_direction():
-			platform.on_enter_cell(current_cell)
+			_platform.on_enter_cell(current_cell)
 			_last_visited_cell = current_cell
 		else:
 			# TODO: emit some kind of signal
@@ -51,7 +54,7 @@ func _process(delta):
 		# TODO: emit some kind of signal
 		return
 
-	current_cell.move_platform(_tick_time, platform)
+	current_cell.move_platform(_tick_time, _platform)
 	_tick_time += delta * Main.simulation_speed
 	if _tick_time > 1.0:
 		_tick_time = fmod(_tick_time, 1.0)
@@ -65,6 +68,14 @@ func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
 	var conv = Conveyor.new(ty, rot)
 	add_child(conv)
 	set_cell(index, conv)
+
+
+func set_platform(platform: Platform):
+	_platform = platform
+
+
+func get_dimentions() -> Vector2:
+	return Vector2(width, height) * Conveyor.CELL_SIZE
 
 
 func get_cell(index: Vector2i):
