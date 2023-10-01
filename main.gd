@@ -1,3 +1,3 @@
 extends Node2D
 
-var simulation_speed = 1.0
+var simulation_speed = 2.0
