@@ -17,6 +17,8 @@ const TEXTURE: AtlasTexture = preload("res://prefabs/conveyor/conveyor_texture.t
 
 var occupied: bool = false
 
+var _figure: Figure = null
+var _figure_offset: Vector2i = Vector2i()
 var _tick: int = 0
 
 enum Item {
@@ -25,8 +27,10 @@ enum Item {
 	TurnRight,
 	RotateLeft,
 	RotateRight,
-	PushRight,
 	PushLeft,
+	PushRight,
+	PullRight,
+	PullLeft,
 	# Semaphore,
 }
 
@@ -54,7 +58,8 @@ func reset():
 func next_tick() -> bool:
 	_tick += 1
 	match ty:
-		Item.RotateLeft, Item.RotateRight, Item.PushLeft, Item.PushRight:
+		Item.RotateLeft, Item.RotateRight, \
+		Item.PushLeft, Item.PushRight, Item.PullLeft, Item.PullRight:
 			return _tick < 2
 		_:
 			return _tick < 1
@@ -76,6 +81,10 @@ func move_platform(tick_time: float, platform: Platform):
 			_do_move_push(tick_time, platform, false)
 		Item.PushRight:
 			_do_move_push(tick_time, platform, true)
+		Item.PullLeft:
+			_do_move_pull(tick_time, platform, false)
+		Item.PullRight:
+			_do_move_pull(tick_time, platform, true)
 
 
 func _do_move_straight(tick_time: float, platform: Platform):
@@ -125,6 +134,16 @@ func _do_move_push(tick_time: float, platform: Platform, right: bool):
 		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
 
 
+func _do_move_pull(tick_time: float, platform: Platform, _right: bool):
+	if _tick == 0:
+		if tick_time < 0.5:
+			var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
+			_set_relative_platform_position(platform, start_offset.lerp(Vector2.ZERO, tick_time * 2))
+	elif tick_time >= 0.5:
+		var end_offset = Conveyor.make_direction(rot)
+		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
+
+
 func get_start_direction() -> Vector2i:
 	return Conveyor.make_grid_direction(rot)
 
@@ -151,9 +170,9 @@ func _sync_sprite_state():
 			flip_h = true
 		Item.RotateRight, Item.RotateLeft:
 			tile_index = Vector2(2, 1)
-		Item.PushRight:
+		Item.PushRight, Item.PullRight:
 			tile_index = Vector2(3, 1)
-		Item.PushLeft:
+		Item.PushLeft, Item.PullLeft:
 			tile_index = Vector2(3, 1)
 			flip_h = true
 

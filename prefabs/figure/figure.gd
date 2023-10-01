@@ -2,24 +2,18 @@ extends Node2D
 
 class_name Figure
 
-# Packed grid item:
-# 1 bit - diagonal
-# 16 bit - first
-# 16 bit - second
-
-const PACKED_DIAGONAL_MASK: int = 0x100000000
-const PACKED_INDEX_MASK: int = 0xffff
-
 var _parts: Array[FigurePart] = []
-var _grid: Array[int] = []
-var _pivot: Vector2i = Vector2i()
+
+var _pivot_part: FigurePart = null
+var _target_pivot_part: FigurePart = null
+
+var _pivot_offset := Vector2.ZERO
+var _target_pivot_offset := Vector2.ZERO
+var _shift_timer := 0.0
+var _shift_step := -1
 
 @onready var _handle: Node2D = $Handle
 
-enum Diagonal {
-	Right, # /
-	Left, # \
-}
 
 func _ready():
 	pass
@@ -29,31 +23,23 @@ func _process(_delta):
 	pass
 
 
-func merge(direction: Vector2i, other: Figure) -> bool:
-	return false
+func _traverse_figures():
+	var visited: Dictionary = {}
+	var stack: Array[FigurePart] = []
+	if _pivot_part != null:
+		stack.push_back(_pivot_part)
 
+	while not stack.is_empty():
+		var node = stack.pop_back()
 
-func _pack_grid_item(first: int, second: int, diagonal: Diagonal) -> int:
-	var result = (first & PACKED_INDEX_MASK) | (second & PACKED_INDEX_MASK) << 16
-	if diagonal == Diagonal.Right:
-		result |= PACKED_DIAGONAL_MASK
-	return result
+		if node.top_neighbour != null and not node.top_neighbour.part_id in visited:
+			visited[node.top_neighbour.part_id] = true
+			stack.push_back(node.top_neighbour)
 
+		if node.left_neighbour != null and not node.left_neighbour.part_id in visited:
+			visited[node.left_neighbour.part_id] = true
+			stack.push_back(node.left_neighbour)
 
-func _unpack_diagonal(packed: int) -> Diagonal:
-	if packed & PACKED_DIAGONAL_MASK == 0:
-		return Diagonal.Right
-	else:
-		return Diagonal.Left
-
-
-func _unpack_grid_item_first(packed: int):
-	packed &= PACKED_INDEX_MASK
-	if packed == PACKED_INDEX_MASK:
-		return null
-	return _parts[packed]
-
-
-func _unpack_grid_item_second(packed: int):
-	packed >>= 16
-	return _unpack_grid_item_first(packed)
+		if node.diagonal_neighbour != null and not node.diagonal_neighbour.part_id in visited:
+			visited[node.diagonal_neighbour.part_id] = true
+			stack.push_back(node.diagonal_neighbour)

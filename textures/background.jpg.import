@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://catajgklqugxa"
-path="res://.godot/imported/spritesheet.png-f30a7e1ac0d61f3601f1bb075525bb2d.ctex"
+uid="uid://p60mileg081b"
+path="res://.godot/imported/background.jpg-73537266ec22d7a925b3e0de9a2aabda.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/spritesheet.png"
-dest_files=["res://.godot/imported/spritesheet.png-f30a7e1ac0d61f3601f1bb075525bb2d.ctex"]
+source_file="res://textures/background.jpg"
+dest_files=["res://.godot/imported/background.jpg-73537266ec22d7a925b3e0de9a2aabda.ctex"]
 
 [params]
 
@@ -21,9 +21,9 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=1
+roughness/mode=0
 roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false

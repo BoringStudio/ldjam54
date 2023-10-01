@@ -28,7 +28,7 @@ func _ready():
 	_spawn_cell(Vector2i(3, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
 	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
 	_spawn_cell(Vector2i(2, 0), Conveyor.Item.RotateLeft, Conveyor.DIR_LEFT)
-	_spawn_cell(Vector2i(1, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
+	_spawn_cell(Vector2i(1, 0), Conveyor.Item.PullRight, Conveyor.DIR_LEFT)
 
 
 func _process(delta):
