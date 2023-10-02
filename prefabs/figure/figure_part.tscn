@@ -15,17 +15,17 @@ size = Vector2(32, 32)
 
 [node name="FigurePart" type="Node2D"]
 script = ExtResource("1_5yxt2")
-color = Color(0.999999, 0.24634, 0.177215, 1)
+color = Color(1, 0.247059, 0.176471, 0.701961)
 
 [node name="Sprite" type="Sprite2D" parent="."]
-modulate = Color(0.999999, 0.24634, 0.177215, 1)
+modulate = Color(1, 0.247059, 0.176471, 0.701961)
 z_index = 10
 texture = SubResource("AtlasTexture_0xjm1")
 
 [node name="Triangle" type="StaticBody2D" parent="."]
 
 [node name="Exact" type="CollisionPolygon2D" parent="Triangle"]
-polygon = PackedVector2Array(-129, 128, 128, -128, -128, -128)
+polygon = PackedVector2Array(-120, 120, 120, -120, -120, -120)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Triangle"]
 shape = SubResource("RectangleShape2D_qbhpx")
@@ -39,4 +39,5 @@ polygon = PackedVector2Array(-129, 128, 128, -128, -128, -128)
 shape = SubResource("RectangleShape2D_qbhpx")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="Area"]
+visible = false
 mesh = SubResource("QuadMesh_cojdn")

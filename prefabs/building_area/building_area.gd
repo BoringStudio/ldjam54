@@ -1,7 +1,7 @@
 extends Node2D
 class_name BuildingArea
 
-const ConveyorScene = preload("res://prefabs/conveyor/conveyor.tscn")
+const ConveyorPrefab = preload("res://prefabs/conveyor/conveyor.tscn")
 
 @export var width: int = 10
 @export var height: int = 10
@@ -21,20 +21,20 @@ func _ready():
 	for i in range(total):
 		_grid[i] = null
 
-	_spawn_cell(Vector2i(0, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
-	_spawn_cell(Vector2i(0, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
-	_spawn_cell(Vector2i(1, 1), Conveyor.Item.PullRight, Conveyor.DIR_RIGHT)
-	_spawn_cell(Vector2i(2, 1), Conveyor.Item.TurnRight, Conveyor.DIR_RIGHT)
-	_spawn_cell(Vector2i(2, 2), Conveyor.Item.RotateLeft, Conveyor.DIR_DOWN)
-	_spawn_cell(Vector2i(2, 3), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
-	_spawn_cell(Vector2i(3, 3), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
+	# _spawn_cell(Vector2i(0, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
+	# _spawn_cell(Vector2i(0, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
+	# _spawn_cell(Vector2i(1, 1), Conveyor.Item.PullRight, Conveyor.DIR_RIGHT)
+	# _spawn_cell(Vector2i(2, 1), Conveyor.Item.TurnRight, Conveyor.DIR_RIGHT)
+	# _spawn_cell(Vector2i(2, 2), Conveyor.Item.RotateLeft, Conveyor.DIR_DOWN)
+	# _spawn_cell(Vector2i(2, 3), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
+	# _spawn_cell(Vector2i(3, 3), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
 
-	_spawn_cell(Vector2i(3, 2), Conveyor.Item.Straight, Conveyor.DIR_UP)
+	# _spawn_cell(Vector2i(3, 2), Conveyor.Item.Straight, Conveyor.DIR_UP)
 
-	_spawn_cell(Vector2i(3, 1), Conveyor.Item.Straight, Conveyor.DIR_UP)
-	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
-	_spawn_cell(Vector2i(2, 0), Conveyor.Item.RotateLeft, Conveyor.DIR_LEFT)
-	_spawn_cell(Vector2i(1, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
+	# _spawn_cell(Vector2i(3, 1), Conveyor.Item.Straight, Conveyor.DIR_UP)
+	# _spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
+	# _spawn_cell(Vector2i(2, 0), Conveyor.Item.RotateLeft, Conveyor.DIR_LEFT)
+	# _spawn_cell(Vector2i(1, 0), Conveyor.Item.PullRight, Conveyor.DIR_LEFT)
 
 
 func _process(delta):
@@ -51,7 +51,10 @@ func _process(delta):
 		if last_visited_cell != current_cell:
 			platform.on_exit_cell(last_visited_cell)
 
-			if last_visited_cell == null or last_visited_cell.get_next_grid_index() == current_cell.get_start_direction():
+			if current_cell != null and \
+				(last_visited_cell == null or \
+					last_visited_cell.get_next_grid_index() == current_cell.get_start_direction()):
+
 				if current_cell.occupied:
 					continue
 				if last_visited_cell != null:
@@ -82,12 +85,25 @@ func _process(delta):
 		_tick_time = fmod(_tick_time, 1.0)
 
 
-func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
-	var conv = ConveyorScene.instantiate()
-	conv.set_params(ty, rot)
+func build_conveyor(pos: Vector2, ty: Conveyor.Item, rot: int) -> bool:
+	var index = _position_to_index(pos)
+	if not check_index(index):
+		return false
 
-	add_child(conv)
-	set_cell(index, conv)
+	_spawn_cell(index, ty, rot)
+	return true
+
+
+func erase_conveyor(pos: Vector2) -> bool:
+	var index = _position_to_index(pos)
+	var conv = get_cell(index)
+	if conv != null:
+		conv.get_parent().remove_child(conv)
+		conv.queue_free()
+		_grid[index.y * width + index.x] = null
+		return true
+	else:
+		return false
 
 
 func add_platform(index: Vector2i, platform: Platform):
@@ -106,6 +122,11 @@ func get_cell(index: Vector2i):
 	return _grid[index.y * width + index.x]
 
 
+func get_cell_by_position(pos: Vector2):
+	var index = _position_to_index(pos)
+	return get_cell(index)
+
+
 func set_cell(index: Vector2i, item: Conveyor):
 	if not check_index(index):
 		return null
@@ -115,3 +136,19 @@ func set_cell(index: Vector2i, item: Conveyor):
 
 func check_index(index: Vector2i) -> bool:
 	return index.x >= 0 and index.y >= 0 and index.x < width and index.y < height
+
+
+func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
+	var conv = get_cell(index)
+	if conv == null:
+		conv = ConveyorPrefab.instantiate()
+		add_child(conv)
+		set_cell(index, conv)
+
+	conv.set_params(ty, rot)
+
+
+func _position_to_index(pos: Vector2) -> Vector2i:
+	const HALF_CELL_SIZE = Conveyor.CELL_SIZE / 2
+	var relative_pos = (pos - _grid_offset - HALF_CELL_SIZE).snapped(Conveyor.CELL_SIZE) / Conveyor.CELL_SIZE
+	return Vector2i(relative_pos)

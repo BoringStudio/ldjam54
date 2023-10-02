@@ -12,13 +12,12 @@ const CELL_SIZE = Vector2(256.0, 256.0)
 
 const TEXTURE: AtlasTexture = preload("res://prefabs/conveyor/conveyor_texture.tres")
 
+@export var color: Color = Color.WHITE
 @export var ty: Item = Item.Straight
 @export_enum("Up:0", "Right:1", "Down:2", "Left:3") var rot: int = DIR_RIGHT
 
 var occupied: bool = false
 
-var _figure: Figure = null
-var _figure_offset: Vector2i = Vector2i()
 var _tick: int = 0
 
 @onready var _sprite = $Sprite
@@ -47,9 +46,46 @@ func _process(_delta):
 		_sync_sprite_state()
 
 
-func set_params(t: Item, r: int):
+func set_params(t: Item, r: int, c: Color = Color.WHITE):
+	color = c
 	ty = t
 	rot = r
+	_sync_sprite_state()
+
+
+func flip():
+	var flipped_ty = ty
+	match ty:
+		Item.TurnLeft:
+			flipped_ty = Item.TurnRight
+		Item.TurnRight:
+			flipped_ty = Item.TurnLeft
+		Item.RotateLeft:
+			flipped_ty = Item.RotateRight
+		Item.RotateRight:
+			flipped_ty = Item.RotateLeft
+		Item.PushLeft:
+			flipped_ty = Item.PushRight
+		Item.PushRight:
+			flipped_ty = Item.PushLeft
+		Item.PullLeft:
+			flipped_ty = Item.PullRight
+		Item.PullRight:
+			flipped_ty = Item.PullLeft
+
+	if flipped_ty != ty:
+		ty = flipped_ty
+		_sync_sprite_state()
+
+
+func rotate_direction(diff: int):
+	rot = (4 + rot + diff) % 4
+	_sync_sprite_state()
+
+
+func set_direction(r: int):
+	rot = r
+	_sync_sprite_state()
 
 
 func reset():
@@ -163,13 +199,17 @@ func get_start_direction() -> Vector2i:
 
 
 func get_next_grid_index() -> Vector2i:
-	var r = rot
+	return Conveyor.make_grid_direction(get_out_rot())
+
+
+func get_out_rot() -> int:
 	match ty:
 		Item.TurnRight:
-			r = Conveyor.make_rot_right(r)
+			return Conveyor.make_rot_right(rot)
 		Item.TurnLeft:
-			r = Conveyor.make_rot_left(r)
-	return Conveyor.make_grid_direction(r)
+			return Conveyor.make_rot_left(rot)
+		_:
+			return rot
 
 
 func _sync_sprite_state():
@@ -182,20 +222,17 @@ func _sync_sprite_state():
 	match ty:
 		Item.Straight:
 			tile_index = Vector2(0, 1)
-		Item.TurnRight:
+		Item.TurnRight, Item.TurnLeft:
 			tile_index = Vector2(1, 1)
-		Item.TurnLeft:
-			tile_index = Vector2(1, 1)
-			_sprite.flip_h = true
-		Item.RotateRight:
+			_sprite.flip_h = ty == Item.TurnLeft
+		Item.RotateRight, Item.RotateLeft:
 			tile_index = Vector2(2, 1)
-		Item.RotateLeft:
-			tile_index = Vector2(2, 1)
-			_sprite.flip_h = true
+			_sprite.flip_h = ty == Item.RotateLeft
 		Item.PushRight:
 			tile_index = Vector2(3, 1)
 			region_size.x = 2
 			region_offset.x = 1
+			_sprite.flip_h = false
 		Item.PushLeft:
 			tile_index = Vector2(3, 1)
 			region_size.x = 2
@@ -205,6 +242,7 @@ func _sync_sprite_state():
 			tile_index = Vector2(3, 2)
 			region_size.x = 2
 			region_offset.x = 1
+			_sprite.flip_h = false
 		Item.PullLeft:
 			tile_index = Vector2(3, 2)
 			region_size.x = 2
@@ -212,9 +250,10 @@ func _sync_sprite_state():
 			_sprite.flip_h = true
 
 	rotation_degrees = 90 * rot
-	_sprite.transform.origin += Vector2(region_offset) * CELL_SIZE / 2
+	_sprite.transform.origin = Vector2(region_offset) * CELL_SIZE / 2
 	_sprite.texture.region.size = Vector2(region_size) * CELL_SIZE
 	_sprite.texture.region.position = Vector2(tile_index) * CELL_SIZE
+	_sprite.modulate = color
 
 
 func _set_relative_platform_position(platform: Platform, cell_offset: Vector2):

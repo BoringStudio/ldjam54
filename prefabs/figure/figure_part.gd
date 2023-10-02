@@ -3,17 +3,11 @@ extends Node2D
 
 class_name FigurePart
 
-@export_color_no_alpha var color: Color
+@export var color: Color
 
 var top_neighbour: FigurePart
 var left_neighbour: FigurePart
 var diagonal_neighbour: FigurePart
-
-var part_id: int:
-	get:
-		return _part_id
-
-var _part_id: int = Main.get_next_figure_id()
 
 @onready var _sprite: Sprite2D = $Sprite
 @onready var _body: StaticBody2D = $Triangle
@@ -85,7 +79,8 @@ func _on_body_entered(body: Node2D):
 			our_figure.add_child(part)
 
 			part.global_transform = part_transform
-			part.transform.origin = part.transform.origin.snapped(Vector2(Conveyor.CELL_SIZE / 2))
+			part.rotation = snappedf(part.rotation, PI / 2)
+			part.transform.origin = part.transform.origin.snapped(Vector2(Conveyor.CELL_SIZE))
 		other_figure.queue_free()
 
 		pass
