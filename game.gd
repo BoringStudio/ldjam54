@@ -38,8 +38,7 @@ func _process(_delta):
 
 func _input(event):
 	if event.is_action_pressed("TogglePlay"):
-		_running = not _running
-		_building_area.running = _running
+		_toggle_play()
 
 	_sync_visibility()
 
@@ -74,6 +73,18 @@ func _sync_camera_zoom():
 	var dimentions_ratio = dimentions / screen_size
 	var max_ratio = maxf(dimentions_ratio.x, dimentions_ratio.y)
 	_camera.zoom = Vector2.ONE / Vector2(max_ratio, max_ratio)
+
+
+func _toggle_play():
+	_set_running(not _running)
+
+
+func _set_running(r: bool):
+	if _running == r:
+		return
+	_running = r
+	_building_area.running = r
+	_building_area.reset()
 
 
 func _place_platform():
@@ -146,6 +157,14 @@ func _release_selected_conveyor_proto():
 func _get_aligned_mouse_pos():
 	const HALF_CELL_SIZE = Conveyor.CELL_SIZE / 2
 	return (get_global_mouse_position() - HALF_CELL_SIZE).snapped(Conveyor.CELL_SIZE) + HALF_CELL_SIZE
+
+
+func _on_play_pressed():
+	_set_running(true)
+
+
+func _on_reset_pressed():
+	_set_running(false)
 
 
 func _on_select_platform_pressed():

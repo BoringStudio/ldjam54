@@ -8,10 +8,11 @@ const ConveyorPrefab = preload("res://prefabs/conveyor/conveyor.tscn")
 
 var running = false
 
-var _grid: Array[Conveyor]
 var _tick_time: float = 0.0
+var _grid: Array[Conveyor]
 
 var _platforms: Array[Platform] = []
+var _platform_origins: Array[Vector2i] = []
 var _platform_indices: Array[Vector2i] = []
 var _platform_last_visited_cells: Array[Conveyor] = []
 
@@ -47,10 +48,10 @@ func _process(delta):
 
 	for i in range(_platforms.size()):
 		var platform = _platforms[i]
-		var platform_origin = _platform_indices[i]
+		var platform_index = _platform_indices[i]
 		var last_visited_cell = _platform_last_visited_cells[i]
 
-		var current_cell = get_cell(platform_origin)
+		var current_cell = get_cell(platform_index)
 
 		# Update last visited cell if changed
 		if last_visited_cell != current_cell:
@@ -90,6 +91,20 @@ func _process(delta):
 		_tick_time = fmod(_tick_time, 1.0)
 
 
+func reset():
+	_tick_time = 0.0
+	for item in _grid:
+		if item != null:
+			item.reset()
+
+	for i in range(_platforms.size()):
+		var platform = _platforms[i]
+		var index = _platform_origins[i]
+		_platform_indices[i] = index
+		_platform_last_visited_cells[i] = null
+		platform.position = _grid_offset + Vector2(index) * Conveyor.CELL_SIZE
+
+
 func build_conveyor(pos: Vector2, ty: Conveyor.Item, rot: int) -> bool:
 	var index = _position_to_index(pos)
 	if not check_index(index):
@@ -120,10 +135,11 @@ func add_platform(pos: Vector2, platform: Platform) -> bool:
 	if not check_index(index):
 		return false
 
-	if _platform_indices.has(index):
+	if _platform_origins.has(index):
 		return false
 
 	_platforms.push_back(platform)
+	_platform_origins.push_back(index)
 	_platform_indices.push_back(index)
 	_platform_last_visited_cells.push_back(null)
 	platform.position = _grid_offset + Vector2(index) * Conveyor.CELL_SIZE
@@ -144,6 +160,7 @@ func erase_platform(pos: Vector2) -> bool:
 	platform.queue_free()
 
 	_platforms.remove_at(i)
+	_platform_origins.remove_at(i)
 	_platform_indices.remove_at(i)
 	_platform_last_visited_cells.remove_at(i)
 	return true
