@@ -8,6 +8,8 @@ const ConveyorPrefab = preload("res://prefabs/conveyor/conveyor.tscn")
 @export var padding = Vector2(100, 100)
 @export var shift = Vector2.ZERO
 
+@onready var template: Template = $Template
+
 @onready var _camera: Camera2D = $Camera
 @onready var _building_area: BuildingArea = $BuildingArea
 @onready var _figures: Node2D = $Figures
@@ -28,6 +30,13 @@ func _ready():
 	_camera.get_viewport().size_changed.connect(_sync_camera_zoom)
 
 	_reset()
+
+	if template != null:
+		template.complete.connect(_on_complete)
+
+
+func _on_complete():
+	print("DONE!")
 
 
 func _process(_delta):

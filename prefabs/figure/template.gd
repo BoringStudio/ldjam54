@@ -3,6 +3,8 @@ extends Node2D
 
 class_name Template
 
+signal complete()
+
 @export var pallete: Array[Color]
 
 @export var texture: Texture
@@ -19,7 +21,7 @@ var _last_change_index: int = 0
 
 var _areas: Array[Area2D] = []
 var _flip = false
-
+var _done = false
 
 func _ready():
 	_sync_sprites()
@@ -33,12 +35,16 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
+	if _done:
+		return
+
 	if _flip:
 		for area in _areas:
 			area.set_collision_layer_value(1, false)
 
 		if _check_overlapping_figure() > 0:
-			print("DONE!")
+			complete.emit()
+			_done = true
 	else:
 		for area in _areas:
 			area.set_collision_layer_value(1, true)
