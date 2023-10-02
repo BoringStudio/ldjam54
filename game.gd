@@ -109,7 +109,10 @@ func _pick_same_conveyor_proto():
 
 
 func _erase_conveyor():
-	_building_area.erase_conveyor(_get_aligned_mouse_pos())
+	var mouse_pos = _get_aligned_mouse_pos()
+	if _building_area.erase_platform(mouse_pos):
+		return
+	_building_area.erase_conveyor(mouse_pos)
 
 
 func _sync_visibility():

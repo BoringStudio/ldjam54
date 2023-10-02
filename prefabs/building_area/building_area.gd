@@ -135,6 +135,17 @@ func erase_platform(pos: Vector2) -> bool:
 	if not check_index(index):
 		return false
 
+	var i = _platform_indices.find(index)
+	if i < 0:
+		return false
+
+	var platform = _platforms[i]
+	platform.get_parent().remove_child(platform)
+	platform.queue_free()
+
+	_platforms.remove_at(i)
+	_platform_indices.remove_at(i)
+	_platform_last_visited_cells.remove_at(i)
 	return true
 
 
