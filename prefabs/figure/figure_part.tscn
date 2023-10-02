@@ -15,10 +15,10 @@ size = Vector2(32, 32)
 
 [node name="FigurePart" type="Node2D"]
 script = ExtResource("1_5yxt2")
-color = Color(1, 0.247059, 0.176471, 0.701961)
+pallete = Array[Color]([Color(0.866667, 0.223529, 0.588235, 0.784314), Color(0.956863, 0.662745, 0.247059, 0.784314), Color(0.698039, 0.92549, 0.239216, 0.784314)])
 
 [node name="Sprite" type="Sprite2D" parent="."]
-modulate = Color(1, 0.247059, 0.176471, 0.701961)
+modulate = Color(0.866667, 0.223529, 0.588235, 0.784314)
 z_index = 10
 texture = SubResource("AtlasTexture_0xjm1")
 

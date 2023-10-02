@@ -6,11 +6,13 @@ const ConveyorPrefab = preload("res://prefabs/conveyor/conveyor.tscn")
 @export var width: int = 10
 @export var height: int = 10
 
+var running = false
+
 var _grid: Array[Conveyor]
 var _tick_time: float = 0.0
 
 var _platforms: Array[Platform] = []
-var _platform_origins: Array[Vector2i] = []
+var _platform_indices: Array[Vector2i] = []
 var _platform_last_visited_cells: Array[Conveyor] = []
 
 @onready var _grid_offset = transform.origin - Vector2(Conveyor.CELL_SIZE) * Vector2(width, height) * 0.5 + Vector2(Conveyor.CELL_SIZE) * 0.5
@@ -38,11 +40,14 @@ func _ready():
 
 
 func _process(delta):
+	if not running:
+		return
+
 	var next_tick_time = _tick_time + delta * Main.simulation_speed
 
 	for i in range(_platforms.size()):
 		var platform = _platforms[i]
-		var platform_origin = _platform_origins[i]
+		var platform_origin = _platform_indices[i]
 		var last_visited_cell = _platform_last_visited_cells[i]
 
 		var current_cell = get_cell(platform_origin)
@@ -78,7 +83,7 @@ func _process(delta):
 		current_cell.move_platform(_tick_time, platform)
 		if next_tick_time > 1.0:
 			if not current_cell.next_tick():
-				_platform_origins[i] += current_cell.get_next_grid_index()
+				_platform_indices[i] += current_cell.get_next_grid_index()
 
 	_tick_time = next_tick_time
 	if _tick_time > 1.0:
@@ -106,10 +111,31 @@ func erase_conveyor(pos: Vector2) -> bool:
 		return false
 
 
-func add_platform(index: Vector2i, platform: Platform):
+func is_position_inside(pos: Vector2) -> bool:
+	return check_index(_position_to_index(pos))
+
+
+func add_platform(pos: Vector2, platform: Platform) -> bool:
+	var index = _position_to_index(pos)
+	if not check_index(index):
+		return false
+
+	if _platform_indices.has(index):
+		return false
+
 	_platforms.push_back(platform)
-	_platform_origins.push_back(index)
+	_platform_indices.push_back(index)
 	_platform_last_visited_cells.push_back(null)
+	platform.position = _grid_offset + Vector2(index) * Conveyor.CELL_SIZE
+	return true
+
+
+func erase_platform(pos: Vector2) -> bool:
+	var index = _position_to_index(pos)
+	if not check_index(index):
+		return false
+
+	return true
 
 
 func get_dimentions() -> Vector2:

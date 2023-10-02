@@ -1,6 +1,8 @@
 extends Node2D
 class_name Platform
 
+var color: Color = Color.WHITE
+
 var _direction: int = 0
 var _shift: Vector2i = Vector2i.ZERO
 
@@ -22,7 +24,7 @@ const PI2 = PI * 2
 const HALF_PI = PI / 2
 
 func _ready():
-	pass
+	_handle.modulate = color
 
 
 func _process(delta):
@@ -68,6 +70,10 @@ func _do_shift(delta: float):
 	_shift_timer += delta * Main.simulation_speed
 	if _shift_timer >= 1.0:
 		_complete_shift()
+
+
+func set_color(c: Color):
+	color = c
 
 
 func on_enter_cell(_cell: Conveyor):

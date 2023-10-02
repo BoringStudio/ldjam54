@@ -11,13 +11,65 @@
 script = ExtResource("1_qwi48")
 conveyor_proto_color = Color(1, 0.94902, 0, 1)
 
-[node name="BackgroundImage" type="Sprite2D" parent="."]
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Blueprint" type="Sprite2D" parent="Background"]
 texture_repeat = 3
-position = Vector2(3, -3)
-scale = Vector2(1.015, 1.015)
 texture = ExtResource("2_c38q6")
 
-[node name="Background" type="TileMap" parent="."]
+[node name="Blueprint2" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(2048, 0)
+texture = ExtResource("2_c38q6")
+flip_h = true
+
+[node name="Blueprint3" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(0, -2048)
+texture = ExtResource("2_c38q6")
+flip_v = true
+
+[node name="Blueprint4" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(2048, -2048)
+texture = ExtResource("2_c38q6")
+flip_h = true
+flip_v = true
+
+[node name="Blueprint5" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(0, 2048)
+texture = ExtResource("2_c38q6")
+flip_v = true
+
+[node name="Blueprint7" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(-2048, 0)
+texture = ExtResource("2_c38q6")
+flip_h = true
+
+[node name="Blueprint8" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(-2048, -2048)
+texture = ExtResource("2_c38q6")
+flip_h = true
+flip_v = true
+
+[node name="Blueprint9" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(-2048, 2048)
+texture = ExtResource("2_c38q6")
+flip_h = true
+flip_v = true
+
+[node name="Blueprint6" type="Sprite2D" parent="Background"]
+texture_repeat = 3
+position = Vector2(2048, 2048)
+texture = ExtResource("2_c38q6")
+flip_h = true
+flip_v = true
+
+[node name="BackgroundTiles" type="TileMap" parent="."]
 tile_set = ExtResource("1_6p75a")
 cell_quadrant_size = 128
 format = 2
@@ -33,11 +85,12 @@ height = 4
 [node name="Figures" type="Node2D" parent="."]
 
 [node name="TestFigure2" type="Node2D" parent="Figures"]
-position = Vector2(-128, -645)
+position = Vector2(-132, -127)
 rotation = 1.57079
 script = ExtResource("5_m2r8b")
 
 [node name="FigurePart" parent="Figures/TestFigure2" instance=ExtResource("5_44ita")]
+color = 1
 
 [node name="GUI" type="CanvasLayer" parent="."]
 
@@ -51,50 +104,57 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="SelectStraight" type="Button" parent="GUI/Base"]
+[node name="SelectPlatform" type="Button" parent="GUI/Base"]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-text = "Straight
+offset_right = 70.0
+offset_bottom = 31.0
+text = "SelectPlatform
 "
 
-[node name="SelectTurn" type="Button" parent="GUI/Base"]
+[node name="SelectStraight" type="Button" parent="GUI/Base"]
 layout_mode = 0
 offset_left = 3.0
 offset_top = 39.0
 offset_right = 73.0
 offset_bottom = 70.0
+text = "Straight
+"
+
+[node name="SelectTurn" type="Button" parent="GUI/Base"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 78.0
+offset_right = 76.0
+offset_bottom = 109.0
 text = "Turn"
 
 [node name="SelectRotate" type="Button" parent="GUI/Base"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 81.0
-offset_right = 73.0
-offset_bottom = 112.0
+offset_left = 6.0
+offset_top = 120.0
+offset_right = 76.0
+offset_bottom = 151.0
 text = "Rotate"
 
 [node name="SelectPush" type="Button" parent="GUI/Base"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 119.0
-offset_right = 73.0
-offset_bottom = 150.0
+offset_left = 6.0
+offset_top = 158.0
+offset_right = 76.0
+offset_bottom = 189.0
 text = "Push"
 
 [node name="SelectPull" type="Button" parent="GUI/Base"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 162.0
-offset_right = 73.0
-offset_bottom = 193.0
+offset_left = 6.0
+offset_top = 201.0
+offset_right = 76.0
+offset_bottom = 232.0
 text = "Pull"
 
+[connection signal="pressed" from="GUI/Base/SelectPlatform" to="." method="_on_select_platform_pressed"]
 [connection signal="pressed" from="GUI/Base/SelectStraight" to="." method="_on_select_straight_pressed"]
 [connection signal="pressed" from="GUI/Base/SelectTurn" to="." method="_on_select_turn_pressed"]
-[connection signal="pressed" from="GUI/Base/SelectRotate" to="." method="_on_select_turn_pressed"]
 [connection signal="pressed" from="GUI/Base/SelectRotate" to="." method="_on_select_rotate_pressed"]
-[connection signal="pressed" from="GUI/Base/SelectPush" to="." method="_on_select_turn_pressed"]
 [connection signal="pressed" from="GUI/Base/SelectPush" to="." method="_on_select_push_pressed"]
-[connection signal="pressed" from="GUI/Base/SelectPull" to="." method="_on_select_turn_pressed"]
 [connection signal="pressed" from="GUI/Base/SelectPull" to="." method="_on_select_pull_pressed"]

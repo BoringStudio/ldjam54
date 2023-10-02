@@ -3,7 +3,9 @@ extends Node2D
 
 class_name FigurePart
 
-@export var color: Color
+@export var pallete: Array[Color]
+
+@export_enum("Red:0", "Yellow:1", "Green:2") var color: int = 0
 
 var top_neighbour: FigurePart
 var left_neighbour: FigurePart
@@ -55,7 +57,8 @@ func _compute_rotation() -> int:
 
 
 func _sync_sprite_state():
-	_sprite.modulate = color
+	if not pallete.is_empty():
+		_sprite.modulate = pallete[color]
 
 
 func _on_body_entered(body: Node2D):
@@ -82,5 +85,3 @@ func _on_body_entered(body: Node2D):
 			part.rotation = snappedf(part.rotation, PI / 2)
 			part.transform.origin = part.transform.origin.snapped(Vector2(Conveyor.CELL_SIZE))
 		other_figure.queue_free()
-
-		pass
