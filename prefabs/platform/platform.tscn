@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://7dieiehuqws0"]
+[gd_scene load_steps=4 format=3 uid="uid://7dieiehuqws0"]
 
 [ext_resource type="Texture2D" uid="uid://dqxfx0ccxfcek" path="res://prefabs/platform/platform.tres" id="1_img2l"]
 [ext_resource type="Script" path="res://prefabs/platform/platform.gd" id="1_v6q8d"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lhceh"]
+size = Vector2(160, 160)
 
 [node name="Platform" type="Node2D"]
 script = ExtResource("1_v6q8d")
@@ -9,3 +12,8 @@ script = ExtResource("1_v6q8d")
 [node name="Handle" type="Sprite2D" parent="."]
 texture_repeat = 1
 texture = ExtResource("1_img2l")
+
+[node name="Area2D" type="Area2D" parent="Handle"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Handle/Area2D"]
+shape = SubResource("RectangleShape2D_lhceh")

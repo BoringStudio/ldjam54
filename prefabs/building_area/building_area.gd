@@ -1,7 +1,7 @@
 extends Node2D
 class_name BuildingArea
 
-const Conveyor = preload("res://prefabs/conveyor/conveyor.gd")
+const ConveyorScene = preload("res://prefabs/conveyor/conveyor.tscn")
 
 @export var width: int = 10
 @export var height: int = 10
@@ -23,12 +23,18 @@ func _ready():
 
 	_spawn_cell(Vector2i(0, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_LEFT)
 	_spawn_cell(Vector2i(0, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
-	_spawn_cell(Vector2i(1, 1), Conveyor.Item.PushRight, Conveyor.DIR_RIGHT)
-	_spawn_cell(Vector2i(2, 1), Conveyor.Item.RotateRight, Conveyor.DIR_RIGHT)
-	_spawn_cell(Vector2i(3, 1), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
+	_spawn_cell(Vector2i(1, 1), Conveyor.Item.PullRight, Conveyor.DIR_RIGHT)
+	_spawn_cell(Vector2i(2, 1), Conveyor.Item.TurnRight, Conveyor.DIR_RIGHT)
+	_spawn_cell(Vector2i(2, 2), Conveyor.Item.RotateLeft, Conveyor.DIR_DOWN)
+	_spawn_cell(Vector2i(2, 3), Conveyor.Item.TurnLeft, Conveyor.DIR_DOWN)
+	_spawn_cell(Vector2i(3, 3), Conveyor.Item.TurnLeft, Conveyor.DIR_RIGHT)
+
+	_spawn_cell(Vector2i(3, 2), Conveyor.Item.Straight, Conveyor.DIR_UP)
+
+	_spawn_cell(Vector2i(3, 1), Conveyor.Item.Straight, Conveyor.DIR_UP)
 	_spawn_cell(Vector2i(3, 0), Conveyor.Item.TurnLeft, Conveyor.DIR_UP)
 	_spawn_cell(Vector2i(2, 0), Conveyor.Item.RotateLeft, Conveyor.DIR_LEFT)
-	_spawn_cell(Vector2i(1, 0), Conveyor.Item.PullRight, Conveyor.DIR_LEFT)
+	_spawn_cell(Vector2i(1, 0), Conveyor.Item.Straight, Conveyor.DIR_LEFT)
 
 
 func _process(delta):
@@ -77,7 +83,9 @@ func _process(delta):
 
 
 func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
-	var conv = Conveyor.new(ty, rot)
+	var conv = ConveyorScene.instantiate()
+	conv.set_params(ty, rot)
+
 	add_child(conv)
 	set_cell(index, conv)
 

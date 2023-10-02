@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://ddesk3ee7wnap"]
+[gd_scene load_steps=7 format=3 uid="uid://ddesk3ee7wnap"]
 
 [ext_resource type="TileSet" uid="uid://d3c2vifoloe25" path="res://textures/static.tres" id="1_6p75a"]
 [ext_resource type="Script" path="res://game.gd" id="1_qwi48"]
 [ext_resource type="PackedScene" uid="uid://dkw4br5pbiykp" path="res://prefabs/building_area/building_area.tscn" id="2_aonjk"]
 [ext_resource type="Texture2D" uid="uid://p60mileg081b" path="res://textures/background.jpg" id="2_c38q6"]
+[ext_resource type="PackedScene" uid="uid://w3bynhbmiyu7" path="res://prefabs/figure/figure_part.tscn" id="5_44ita"]
+[ext_resource type="Script" path="res://prefabs/figure/figure.gd" id="5_m2r8b"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_qwi48")
@@ -26,3 +28,17 @@ zoom = Vector2(0.5, 0.5)
 [node name="BuildingArea" parent="." instance=ExtResource("2_aonjk")]
 width = 4
 height = 4
+
+[node name="Figures" type="Node2D" parent="."]
+
+[node name="TestFigure" type="Node2D" parent="Figures"]
+position = Vector2(-128, 127)
+script = ExtResource("5_m2r8b")
+
+[node name="FigurePart" parent="Figures/TestFigure" instance=ExtResource("5_44ita")]
+
+[node name="TestFigure2" type="Node2D" parent="Figures"]
+position = Vector2(-382, -384)
+script = ExtResource("5_m2r8b")
+
+[node name="FigurePart" parent="Figures/TestFigure2" instance=ExtResource("5_44ita")]

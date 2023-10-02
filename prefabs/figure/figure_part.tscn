@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://w3bynhbmiyu7"]
+[gd_scene load_steps=6 format=3 uid="uid://w3bynhbmiyu7"]
 
 [ext_resource type="Script" path="res://prefabs/figure/figure_part.gd" id="1_5yxt2"]
 [ext_resource type="Texture2D" uid="uid://catajgklqugxa" path="res://textures/spritesheet.png" id="1_bdx26"]
@@ -7,21 +7,36 @@
 atlas = ExtResource("1_bdx26")
 region = Rect2(512, 0, 256, 256)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_h0uli"]
-size = Vector2(256, 256)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qbhpx"]
+size = Vector2(32, 32)
+
+[sub_resource type="QuadMesh" id="QuadMesh_cojdn"]
+size = Vector2(32, 32)
 
 [node name="FigurePart" type="Node2D"]
 script = ExtResource("1_5yxt2")
+color = Color(0.999999, 0.24634, 0.177215, 1)
 
 [node name="Sprite" type="Sprite2D" parent="."]
+modulate = Color(0.999999, 0.24634, 0.177215, 1)
+z_index = 10
 texture = SubResource("AtlasTexture_0xjm1")
 
-[node name="Triangle" type="RigidBody2D" parent="."]
+[node name="Triangle" type="StaticBody2D" parent="."]
 
 [node name="Exact" type="CollisionPolygon2D" parent="Triangle"]
 polygon = PackedVector2Array(-129, 128, 128, -128, -128, -128)
 
-[node name="Area" type="RigidBody2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Triangle"]
+shape = SubResource("RectangleShape2D_qbhpx")
 
-[node name="Square" type="CollisionShape2D" parent="Area"]
-shape = SubResource("RectangleShape2D_h0uli")
+[node name="Area" type="Area2D" parent="."]
+
+[node name="Exact" type="CollisionPolygon2D" parent="Area"]
+polygon = PackedVector2Array(-129, 128, 128, -128, -128, -128)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area"]
+shape = SubResource("RectangleShape2D_qbhpx")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="Area"]
+mesh = SubResource("QuadMesh_cojdn")

@@ -1,5 +1,5 @@
 @tool
-extends Sprite2D
+extends Node2D
 
 class_name Conveyor
 
@@ -21,6 +21,8 @@ var _figure: Figure = null
 var _figure_offset: Vector2i = Vector2i()
 var _tick: int = 0
 
+@onready var _sprite = $Sprite
+
 enum Item {
 	Straight,
 	TurnLeft,
@@ -35,19 +37,19 @@ enum Item {
 }
 
 
-func _init(t: Item, r: int):
-	texture = TEXTURE.duplicate()
-	ty = t
-	rot = r
-
-
 func _ready():
+	_sprite.texture = TEXTURE.duplicate()
 	_sync_sprite_state()
 
 
 func _process(_delta):
 	if Engine.is_editor_hint():
 		_sync_sprite_state()
+
+
+func set_params(t: Item, r: int):
+	ty = t
+	rot = r
 
 
 func reset():
@@ -129,17 +131,29 @@ func _do_move_push(tick_time: float, platform: Platform, right: bool):
 			if not right:
 				r = Conveyor.make_rot_inv(r)
 			platform.shift_handle(Conveyor.make_grid_direction(r))
-	elif tick_time >= 0.5:
+	elif _tick == 1 and tick_time < 0.5:
+		platform.release_figure()
+	else:
+		platform.grab_figure()
 		var end_offset = Conveyor.make_direction(rot)
 		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
 
 
-func _do_move_pull(tick_time: float, platform: Platform, _right: bool):
+func _do_move_pull(tick_time: float, platform: Platform, right: bool):
 	if _tick == 0:
 		if tick_time < 0.5:
 			var start_offset = Conveyor.make_direction(Conveyor.make_rot_inv(rot))
 			_set_relative_platform_position(platform, start_offset.lerp(Vector2.ZERO, tick_time * 2))
+		else:
+			platform.release_figure()
+			var r = Conveyor.make_rot_right(rot)
+			if not right:
+				r = Conveyor.make_rot_inv(r)
+			platform.shift_handle(Conveyor.make_grid_direction(r))
+	elif _tick == 1 and tick_time < 0.1:
+		platform.grab_figure()
 	elif tick_time >= 0.5:
+		platform.grab_figure()
 		var end_offset = Conveyor.make_direction(rot)
 		_set_relative_platform_position(platform, Vector2.ZERO.lerp(end_offset, tick_time * 2 - 1))
 
@@ -159,7 +173,12 @@ func get_next_grid_index() -> Vector2i:
 
 
 func _sync_sprite_state():
+	if _sprite == null or _sprite.texture == null:
+		return
+
 	var tile_index = Vector2i()
+	var region_size = Vector2i.ONE
+	var region_offset = Vector2i.ZERO
 	match ty:
 		Item.Straight:
 			tile_index = Vector2(0, 1)
@@ -167,18 +186,35 @@ func _sync_sprite_state():
 			tile_index = Vector2(1, 1)
 		Item.TurnLeft:
 			tile_index = Vector2(1, 1)
-			flip_h = true
-		Item.RotateRight, Item.RotateLeft:
+			_sprite.flip_h = true
+		Item.RotateRight:
 			tile_index = Vector2(2, 1)
-		Item.PushRight, Item.PullRight:
+		Item.RotateLeft:
+			tile_index = Vector2(2, 1)
+			_sprite.flip_h = true
+		Item.PushRight:
 			tile_index = Vector2(3, 1)
-		Item.PushLeft, Item.PullLeft:
+			region_size.x = 2
+			region_offset.x = 1
+		Item.PushLeft:
 			tile_index = Vector2(3, 1)
-			flip_h = true
+			region_size.x = 2
+			region_offset.x = -1
+			_sprite.flip_h = true
+		Item.PullRight:
+			tile_index = Vector2(3, 2)
+			region_size.x = 2
+			region_offset.x = 1
+		Item.PullLeft:
+			tile_index = Vector2(3, 2)
+			region_size.x = 2
+			region_offset.x = -1
+			_sprite.flip_h = true
 
 	rotation_degrees = 90 * rot
-	texture.region.size = CELL_SIZE
-	texture.region.position = Vector2(tile_index) * CELL_SIZE
+	_sprite.transform.origin += Vector2(region_offset) * CELL_SIZE / 2
+	_sprite.texture.region.size = Vector2(region_size) * CELL_SIZE
+	_sprite.texture.region.position = Vector2(tile_index) * CELL_SIZE
 
 
 func _set_relative_platform_position(platform: Platform, cell_offset: Vector2):

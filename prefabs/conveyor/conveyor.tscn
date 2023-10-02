@@ -1,14 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://3r01k4rb4rnb"]
+[gd_scene load_steps=2 format=3 uid="uid://3r01k4rb4rnb"]
 
-[ext_resource type="Script" path="res://prefabs/conveyor/conveyor.gd" id="1_jfj5k"]
-[ext_resource type="Texture2D" uid="uid://catajgklqugxa" path="res://textures/spritesheet.png" id="2_1t1u7"]
+[ext_resource type="Script" path="res://prefabs/conveyor/conveyor.gd" id="1_uwhm2"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_qbjve"]
-atlas = ExtResource("2_1t1u7")
-region = Rect2(0, 256, 256, 256)
+[node name="Conveyor" type="Node2D"]
+script = ExtResource("1_uwhm2")
 
-[node name="Conveyor" type="Sprite2D"]
-texture = SubResource("AtlasTexture_qbjve")
-flip_h = true
-script = ExtResource("1_jfj5k")
-rot = 0
+[node name="Sprite" type="Sprite2D" parent="."]

@@ -14,7 +14,9 @@ var _shift_step: int = -1
 
 var _step: int = 0
 
-@onready var handle: Sprite2D = $Handle
+@onready var _handle: Sprite2D = $Handle
+@onready var _collision_area: Area2D = $Handle/Area2D
+@onready var _attached_figure: Figure = null
 
 const PI2 = PI * 2
 const HALF_PI = PI / 2
@@ -40,7 +42,7 @@ func _do_rotate(delta: float):
 	elif _direction == 0 and _rotating_towards == 3:
 		angle_from += PI2
 
-	handle.rotation = lerpf(angle_from, angle_to, _rotating_timer)
+	_handle.rotation = lerpf(angle_from, angle_to, _rotating_timer)
 	_rotating_timer += delta * Main.simulation_speed
 
 	if _rotating_timer >= 1.0:
@@ -61,7 +63,7 @@ func _do_shift(delta: float):
 	else:
 		handle_offset = normalized_shift.lerp(Vector2.ZERO, _shift_timer * 2 - 1)
 
-	handle.transform.origin = handle_offset * Conveyor.CELL_SIZE
+	_handle.transform.origin = handle_offset * Conveyor.CELL_SIZE
 
 	_shift_timer += delta * Main.simulation_speed
 	if _shift_timer >= 1.0:
@@ -92,13 +94,63 @@ func shift_handle(diff: Vector2i):
 	_shift_towards = _shift + diff
 
 
+func grab_figure() -> bool:
+	if _attached_figure != null:
+		return false
+
+	var bodies = _collision_area.get_overlapping_bodies()
+
+	for body in bodies:
+		var body_parent = body.get_parent()
+		if body_parent is FigurePart:
+			var figure = body_parent.get_parent()
+			if not figure is Figure:
+				continue
+
+			_attached_figure = figure
+			_change_figure_parent(_attached_figure, _handle)
+
+			_align_attached_figure()
+			return true
+
+	return false
+
+
+func release_figure():
+	if _attached_figure == null:
+		return
+
+	print("RELEASE")
+	_change_figure_parent(_attached_figure, Main.detached_figures_root)
+
+	_align_attached_figure()
+	_attached_figure = null
+
+
+func _align_attached_figure():
+	if _attached_figure == null:
+		return
+	var figure_origin = _attached_figure.global_transform.origin
+	_attached_figure.global_transform.origin = figure_origin.snapped(Vector2(Conveyor.CELL_SIZE / 2))
+
+
 func _complete_rotation():
 	_direction = _rotating_towards
-	handle.rotation = _direction * HALF_PI
+	_handle.rotation = _direction * HALF_PI
 	_rotating_timer = 0.0
 
 
 func _complete_shift():
 	_shift = _shift_towards
-	handle.transform.origin = Vector2()
+	_handle.transform.origin = Vector2()
 	_shift_timer = 0.0
+
+
+func _change_figure_parent(figure: Figure, new_parent: Node2D):
+	call_deferred("_reparent", figure, new_parent, figure.get_global_transform())
+
+
+func _reparent(node: Figure, new_parent: Node2D, old_transform: Transform2D):
+	node.get_parent().remove_child(node)
+	new_parent.add_child(node)
+	node.transform = new_parent.global_transform.inverse() * old_transform
