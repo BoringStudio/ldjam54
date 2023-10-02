@@ -126,7 +126,6 @@ func release_figure():
 	if _attached_figure == null:
 		return
 
-	print("RELEASE")
 	_change_figure_parent(_attached_figure, Main.detached_figures_root)
 
 	_align_attached_figure()
@@ -137,7 +136,7 @@ func _align_attached_figure():
 	if _attached_figure == null:
 		return
 	var figure_origin = _attached_figure.global_transform.origin
-	_attached_figure.global_transform.origin = figure_origin.snapped(Vector2(Conveyor.CELL_SIZE / 2))
+	_attached_figure.global_transform.origin = Main.shift + figure_origin.snapped(Vector2(Conveyor.CELL_SIZE / 2))
 
 
 func _complete_rotation():

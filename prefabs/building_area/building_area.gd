@@ -204,5 +204,5 @@ func _spawn_cell(index: Vector2i, ty: Conveyor.Item, rot: int):
 
 func _position_to_index(pos: Vector2) -> Vector2i:
 	const HALF_CELL_SIZE = Conveyor.CELL_SIZE / 2
-	var relative_pos = (pos - _grid_offset - HALF_CELL_SIZE).snapped(Conveyor.CELL_SIZE) / Conveyor.CELL_SIZE
+	var relative_pos = (pos - Main.shift - _grid_offset - HALF_CELL_SIZE).snapped(Conveyor.CELL_SIZE) / Conveyor.CELL_SIZE
 	return Vector2i(relative_pos)

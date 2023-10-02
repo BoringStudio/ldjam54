@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://yv6m5i0n6msu"]
+
+[ext_resource type="Script" path="res://prefabs/figure/template.gd" id="1_c26ev"]
+[ext_resource type="Texture2D" uid="uid://catajgklqugxa" path="res://textures/spritesheet.png" id="2_m4rl3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2emtd"]
+atlas = ExtResource("2_m4rl3")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_okc5o"]
+size = Vector2(32, 32)
+
+[node name="Template" type="Node2D"]
+script = ExtResource("1_c26ev")
+pallete = Array[Color]([Color(0.866667, 0.223529, 0.588235, 0.784314), Color(0.956863, 0.662745, 0.247059, 0.784314), Color(0.698039, 0.92549, 0.239216, 0.784314)])
+texture = SubResource("AtlasTexture_2emtd")
+area_shape = SubResource("RectangleShape2D_okc5o")
+width = 1
+height = 1
+colors = Array[Vector4i]([Vector4i(0, 1, 1, 0)])

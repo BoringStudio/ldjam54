@@ -83,5 +83,5 @@ func _on_body_entered(body: Node2D):
 
 			part.global_transform = part_transform
 			part.rotation = snappedf(part.rotation, PI / 2)
-			part.transform.origin = part.transform.origin.snapped(Vector2(Conveyor.CELL_SIZE))
+			part.transform.origin = Main.shift + part.transform.origin.snapped(Vector2(Conveyor.CELL_SIZE))
 		other_figure.queue_free()

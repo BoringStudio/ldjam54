@@ -1,100 +1,113 @@
-[gd_scene load_steps=7 format=3 uid="uid://ddesk3ee7wnap"]
+[gd_scene load_steps=7 format=3 uid="uid://2y08vo22ilv2"]
 
-[ext_resource type="TileSet" uid="uid://d3c2vifoloe25" path="res://textures/static.tres" id="1_6p75a"]
-[ext_resource type="Script" path="res://game.gd" id="1_qwi48"]
-[ext_resource type="PackedScene" uid="uid://dkw4br5pbiykp" path="res://prefabs/building_area/building_area.tscn" id="2_aonjk"]
-[ext_resource type="Texture2D" uid="uid://p60mileg081b" path="res://textures/background.jpg" id="2_c38q6"]
-[ext_resource type="PackedScene" uid="uid://cud7lmt8wt2wb" path="res://prefabs/figure/part_spawner.tscn" id="5_whykv"]
-[ext_resource type="PackedScene" uid="uid://yv6m5i0n6msu" path="res://prefabs/figure/template.tscn" id="6_8enxj"]
+[ext_resource type="Script" path="res://game.gd" id="1_tvec0"]
+[ext_resource type="Texture2D" uid="uid://p60mileg081b" path="res://textures/background.jpg" id="2_jtjug"]
+[ext_resource type="TileSet" uid="uid://d3c2vifoloe25" path="res://textures/static.tres" id="3_ju534"]
+[ext_resource type="PackedScene" uid="uid://dkw4br5pbiykp" path="res://prefabs/building_area/building_area.tscn" id="4_3c1vt"]
+[ext_resource type="PackedScene" uid="uid://cud7lmt8wt2wb" path="res://prefabs/figure/part_spawner.tscn" id="5_jdy3u"]
+[ext_resource type="PackedScene" uid="uid://yv6m5i0n6msu" path="res://prefabs/figure/template.tscn" id="6_k3tx4"]
 
 [node name="Game" type="Node2D"]
-script = ExtResource("1_qwi48")
+script = ExtResource("1_tvec0")
 conveyor_proto_color = Color(1, 0.94902, 0, 1)
 
 [node name="Background" type="Node2D" parent="."]
 
 [node name="Blueprint" type="Sprite2D" parent="Background"]
 texture_repeat = 3
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 
 [node name="Blueprint2" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(2048, 0)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_h = true
 
 [node name="Blueprint3" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(0, -2048)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_v = true
 
 [node name="Blueprint4" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(2048, -2048)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_h = true
 flip_v = true
 
 [node name="Blueprint5" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(0, 2048)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_v = true
 
 [node name="Blueprint7" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(-2048, 0)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_h = true
 
 [node name="Blueprint8" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(-2048, -2048)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_h = true
 flip_v = true
 
 [node name="Blueprint9" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(-2048, 2048)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_h = true
 flip_v = true
 
 [node name="Blueprint6" type="Sprite2D" parent="Background"]
 texture_repeat = 3
 position = Vector2(2048, 2048)
-texture = ExtResource("2_c38q6")
+texture = ExtResource("2_jtjug")
 flip_h = true
 flip_v = true
 
 [node name="BackgroundTiles" type="TileMap" parent="."]
-tile_set = ExtResource("1_6p75a")
+tile_set = ExtResource("3_ju534")
 cell_quadrant_size = 128
 format = 2
-layer_0/tile_data = PackedInt32Array(-196608, 262144, 65536, -196607, 262144, 65536, -131070, 262144, 131072, -65534, 131072, 65536, 65538, 196608, 0, -65539, 196608, 393216, -3, 0, 2, 65533, 131072, 0, 131069, 262144, 196608, 196606, 131072, 0, 196607, 0, 2, 131072, 196608, 0, 131073, 262144, 0, 131074, 327680, 65536, -196606, 393216, 65536, 196605, 393216, 0, -4, 262144, 196608, -65540, 327680, 0, 65532, 393216, 0, -131075, 327680, 0, -131074, 262144, 65536, -131073, 262144, 65536, 3, 262144, 131072, 65539, 327680, 65536, -65533, 393216, 65536, 262143, 262144, 0, 196608, 327680, 65536, 262142, 393216, 0)
+layer_0/tile_data = PackedInt32Array(196607, 262144, 0, 131072, 262144, 0, 131073, 262144, 0, 131074, 262144, 0, 196605, 262144, 0, 196606, 262144, 0, 196604, 262144, 0, 131067, 262144, 196608, 65531, 262144, 196608, -5, 262144, 196608, -65541, 262144, 196608, -131077, 262144, 196608, -196612, 262144, 65536, -196611, 262144, 65536, -196610, 262144, 65536, -196609, 262144, 65536, -262144, 262144, 65536, -262143, 262144, 65536, -262142, 262144, 65536, -196605, 262144, 131072, -131069, 262144, 131072, -65533, 262144, 131072, 3, 262144, 131072, 65539, 262144, 131072, 131070, 0, 2, 65537, 0, 2, -131070, 0, 2, -65540, 0, 2)
 
 [node name="Camera" type="Camera2D" parent="."]
 zoom = Vector2(0.5, 0.5)
 
-[node name="BuildingArea" parent="." instance=ExtResource("2_aonjk")]
-width = 6
+[node name="BuildingArea" parent="." instance=ExtResource("4_3c1vt")]
+width = 8
 height = 6
 
 [node name="Spawners" type="Node2D" parent="."]
 
-[node name="PartSpawner" parent="Spawners" instance=ExtResource("5_whykv")]
-position = Vector2(-643, -127)
+[node name="PartSpawner" parent="Spawners" instance=ExtResource("5_jdy3u")]
+position = Vector2(-895, -390)
 
-[node name="PartSpawner2" parent="Spawners" instance=ExtResource("5_whykv")]
-position = Vector2(-128, 640)
+[node name="PartSpawner2" parent="Spawners" instance=ExtResource("5_jdy3u")]
+position = Vector2(-388, 380)
+rot = 2
+
+[node name="PartSpawner3" parent="Spawners" instance=ExtResource("5_jdy3u")]
+position = Vector2(380, 380)
 color = 1
+
+[node name="PartSpawner4" parent="Spawners" instance=ExtResource("5_jdy3u")]
+position = Vector2(636, -388)
+color = 2
+rot = 2
 
 [node name="Figures" type="Node2D" parent="."]
 
-[node name="Template" parent="." instance=ExtResource("6_8enxj")]
-position = Vector2(639, 126)
+[node name="Template" parent="." instance=ExtResource("6_k3tx4")]
+position = Vector2(-132, -251)
+width = 3
+height = 2
+colors = Array[Vector4i]([Vector4i(-1, -1, -1, -1), Vector4i(2, 2, 1, 1), Vector4i(-1, -1, -1, -1), Vector4i(0, -1, -1, 0), Vector4i(-1, -1, -1, -1), Vector4i(0, 0, -1, -1)])
+change_index = 1
 
 [node name="GUI" type="CanvasLayer" parent="."]
 

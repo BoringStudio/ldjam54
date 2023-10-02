@@ -5,7 +5,7 @@
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0xjm1"]
 atlas = ExtResource("1_bdx26")
-region = Rect2(512, 0, 256, 256)
+region = Rect2(0, 0, 256, 256)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qbhpx"]
 size = Vector2(32, 32)
@@ -33,7 +33,7 @@ shape = SubResource("RectangleShape2D_qbhpx")
 [node name="Area" type="Area2D" parent="."]
 
 [node name="Exact" type="CollisionPolygon2D" parent="Area"]
-polygon = PackedVector2Array(-129, 128, 128, -128, -128, -128)
+polygon = PackedVector2Array(-120, 120, 120, -120, -120, -120)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area"]
 shape = SubResource("RectangleShape2D_qbhpx")

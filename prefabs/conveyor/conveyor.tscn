@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://prefabs/conveyor/conveyor.gd" id="1_uwhm2"]
 [ext_resource type="Texture2D" uid="uid://catajgklqugxa" path="res://textures/spritesheet.png" id="2_6ding"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_cadat"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_w5a7m"]
 resource_local_to_scene = true
 atlas = ExtResource("2_6ding")
 region = Rect2(0, 256, 256, 256)
@@ -13,4 +13,4 @@ rotation = 1.5708
 script = ExtResource("1_uwhm2")
 
 [node name="Sprite" type="Sprite2D" parent="."]
-texture = SubResource("AtlasTexture_cadat")
+texture = SubResource("AtlasTexture_w5a7m")

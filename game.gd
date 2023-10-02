@@ -6,10 +6,12 @@ const ConveyorPrefab = preload("res://prefabs/conveyor/conveyor.tscn")
 @export var conveyor_proto_color: Color = Color.WHITE
 
 @export var padding = Vector2(100, 100)
+@export var shift = Vector2.ZERO
 
 @onready var _camera: Camera2D = $Camera
 @onready var _building_area: BuildingArea = $BuildingArea
 @onready var _figures: Node2D = $Figures
+@onready var _spawners: Node2D = $Spawners
 
 var _platform_mode = false
 var _platform: Platform = null
@@ -20,9 +22,12 @@ var _running: bool = false
 
 func _ready():
 	Main.detached_figures_root = _figures
+	Main.shift = shift
 
 	_sync_camera_zoom()
 	_camera.get_viewport().size_changed.connect(_sync_camera_zoom)
+
+	_reset()
 
 
 func _process(_delta):
@@ -84,7 +89,14 @@ func _set_running(r: bool):
 		return
 	_running = r
 	_building_area.running = r
+	_reset()
+
+
+func _reset():
 	_building_area.reset()
+	for child in _spawners.get_children():
+		if child is PartSpawner:
+			child.respawn()
 
 
 func _place_platform():
@@ -156,7 +168,7 @@ func _release_selected_conveyor_proto():
 
 func _get_aligned_mouse_pos():
 	const HALF_CELL_SIZE = Conveyor.CELL_SIZE / 2
-	return (get_global_mouse_position() - HALF_CELL_SIZE).snapped(Conveyor.CELL_SIZE) + HALF_CELL_SIZE
+	return shift + (get_global_mouse_position() - HALF_CELL_SIZE).snapped(Conveyor.CELL_SIZE) + HALF_CELL_SIZE
 
 
 func _on_play_pressed():
